@@ -1,8 +1,26 @@
+# Données
 data/raw/
 data/processed/
+
+# Python
 *.pyc
 __pycache__/
-.env
-mlruns/
+
+# Environnements virtuels
+.venv/
 venv/
+
+# Variables d'environnement
+.env
+
+# MLflow
+mlruns/
+
+# Jupyter
 .ipynb_checkpoints/
+
+# Modèles entraînés (optionnel)
+models/
+
+# VS Code (optionnel)
+.vscode/

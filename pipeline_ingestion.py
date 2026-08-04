@@ -31,6 +31,11 @@ def generer_metadonnees(raw_dir=RAW_DATA_DIR, seed=42):
         plante, maladie = parse_plante_maladie(nom_dossier)
 
         for nom_image in os.listdir(chemin_dossier):
+            # On ignore les fichiers qui ne sont pas des images valides
+            # (ex: fichiers systeme residuels comme les fichiers SVN)
+            if not nom_image.lower().endswith((".jpg", ".jpeg", ".png")):
+                continue
+
             chemin_image = os.path.join(chemin_dossier, nom_image)
 
             r = random.random()

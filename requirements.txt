@@ -1,4 +1,4 @@
-numpy
+﻿numpy
 pandas
 matplotlib
 opencv-python
@@ -10,3 +10,6 @@ mlflow
 python-multipart
 pillow
 pytest
+dlt
+duckdb
+kaggle

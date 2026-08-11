@@ -1,0 +1,16 @@
+classe,nb_images,poids_relatif,statut,plante
+Tomato__Tomato_YellowLeaf__Curl_Virus,3208,15.54,Malade,Tomato
+Tomato_Bacterial_spot,2127,10.31,Malade,Tomato
+Tomato_Late_blight,1909,9.25,Malade,Tomato
+Tomato_Septoria_leaf_spot,1771,8.58,Malade,Tomato
+Tomato_Spider_mites_Two_spotted_spider_mite,1676,8.12,Malade,Tomato
+Tomato_healthy,1591,7.71,Saine,Tomato
+Pepper__bell___healthy,1478,7.16,Saine,Pepper
+Tomato__Target_Spot,1404,6.8,Malade,Tomato
+Potato___Early_blight,1000,4.85,Malade,Potato
+Potato___Late_blight,1000,4.85,Malade,Potato
+Tomato_Early_blight,1000,4.85,Malade,Tomato
+Pepper__bell___Bacterial_spot,997,4.83,Malade,Pepper
+Tomato_Leaf_Mold,952,4.61,Malade,Tomato
+Tomato__Tomato_mosaic_virus,373,1.81,Malade,Tomato
+Potato___healthy,152,0.74,Saine,Potato

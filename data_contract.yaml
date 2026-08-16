@@ -1,0 +1,68 @@
+dataset:
+  name: PlantVillage
+  task: image_classification
+
+image:
+  accepted_formats:
+    - jpg
+    - jpeg
+    - png
+
+  width: 224
+  height: 224
+  channels: 3
+  color_mode: RGB
+
+  normalization:
+    min_value: 0.0
+    max_value: 1.0
+
+splits:
+  train:
+    ratio: 0.70
+
+  validation:
+    ratio: 0.15
+
+  test:
+    ratio: 0.15
+
+quality_rules:
+  image_must_be_readable: true
+  image_must_not_be_corrupted: true
+  duplicate_between_splits_allowed: false
+  empty_class_allowed: false
+
+classes:
+  expected_number: 15
+
+  authorized:
+    - Pepper__bell___Bacterial_spot
+    - Pepper__bell___healthy
+    - Potato___Early_blight
+    - Potato___healthy
+    - Potato___Late_blight
+    - Tomato___Target_Spot
+    - Tomato___Tomato_mosaic_virus
+    - Tomato___Tomato_YellowLeaf__Curl_Virus
+    - Tomato_Bacterial_spot
+    - Tomato_Early_blight
+    - Tomato_healthy
+    - Tomato_Late_blight
+    - Tomato_Leaf_Mold
+    - Tomato_Septoria_leaf_spot
+    - Tomato_Spider_mites_Two_spotted_spider_mite
+
+augmentation:
+  applied_to:
+    - train
+
+  applied_to_validation: false
+  applied_to_test: false
+
+  operations:
+    - rotation
+    - horizontal_flip
+    - vertical_flip
+    - zoom
+    - brightness_variation

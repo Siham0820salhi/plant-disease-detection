@@ -1,0 +1,76 @@
+classes:
+
+  Pepper__bell___Bacterial_spot:
+    plant: Pepper bell
+    status: diseased
+    disease: Bacterial spot
+
+  Pepper__bell___healthy:
+    plant: Pepper bell
+    status: healthy
+    disease: none
+
+  Potato___Early_blight:
+    plant: Potato
+    status: diseased
+    disease: Early blight
+
+  Potato___healthy:
+    plant: Potato
+    status: healthy
+    disease: none
+
+  Potato___Late_blight:
+    plant: Potato
+    status: diseased
+    disease: Late blight
+
+  Tomato___Target_Spot:
+    plant: Tomato
+    status: diseased
+    disease: Target Spot
+
+  Tomato___Tomato_mosaic_virus:
+    plant: Tomato
+    status: diseased
+    disease: Tomato mosaic virus
+
+  Tomato___Tomato_YellowLeaf__Curl_Virus:
+    plant: Tomato
+    status: diseased
+    disease: Tomato Yellow Leaf Curl Virus
+
+  Tomato_Bacterial_spot:
+    plant: Tomato
+    status: diseased
+    disease: Bacterial spot
+
+  Tomato_Early_blight:
+    plant: Tomato
+    status: diseased
+    disease: Early blight
+
+  Tomato_healthy:
+    plant: Tomato
+    status: healthy
+    disease: none
+
+  Tomato_Late_blight:
+    plant: Tomato
+    status: diseased
+    disease: Late blight
+
+  Tomato_Leaf_Mold:
+    plant: Tomato
+    status: diseased
+    disease: Leaf Mold
+
+  Tomato_Septoria_leaf_spot:
+    plant: Tomato
+    status: diseased
+    disease: Septoria leaf spot
+
+  Tomato_Spider_mites_Two_spotted_spider_mite:
+    plant: Tomato
+    status: diseased
+    disease: Two-spotted spider mite

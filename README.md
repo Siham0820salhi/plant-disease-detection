@@ -234,14 +234,14 @@ Voir les règles de contribution dans [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 | Rôle | Membre | Responsabilités |
 |---|---|---|
-| Product Owner | *(à compléter)* | Vision, User Stories, backlog |
-| Scrum Master | *(à compléter)* | Agile, tests pytest |
-| Data Engineer — Ingestion | *(à compléter)* | dlt, DuckDB |
-| Data Engineer — Qualité | *(à compléter)* | Prétraitement, qualité des données |
-| Orchestration | *(à compléter)* | Dagster |
-| ML Engineer | *(à compléter)* | Modèle CNN, MLflow |
-| Déploiement | *(à compléter)* | FastAPI, Docker, CI/CD |
-| Data Analyst | *(à compléter)* | EDA, Monitoring, Documentation |
+| Product Owner | *Hasnae EL MIR* | Vision, User Stories, backlog |
+| Scrum Master | *Hiba OUAFI* | Agile, tests pytest |
+| Data Engineer — Ingestion | *khansaa balakrafas* | dlt, DuckDB |
+| Data Engineer — Qualité | *salma zamakhchari* | Prétraitement, qualité des données |
+| Orchestration | *Ibtissam ESSADIKI* | Dagster |
+| ML Engineer | *chaimaa AFESS* | Modèle CNN, MLflow |
+| Déploiement | *Oumaima TALBI* | FastAPI, Docker, CI/CD |
+| Data Analyst | *Siham SALHI* | EDA, Monitoring, Documentation |
 
 ---
 

@@ -1,5 +1,7 @@
 import subprocess
 import sys
+import os
+import webbrowser
 
 
 def lancer_commande(nom_etape, commande):
@@ -21,23 +23,55 @@ def lancer_commande(nom_etape, commande):
 
 if __name__ == "__main__":
 
-    # 1. Tests pytest
+    # ========================================================
+    # 1. TESTS PYTEST
+    # ========================================================
+
     lancer_commande(
         "1. TESTS PYTEST",
         "python -m pytest tests/test_qualite_donnees.py -v"
     )
 
-    # 2. Great Expectations
+    # ========================================================
+    # 2. GREAT EXPECTATIONS
+    # ========================================================
+
     lancer_commande(
         "2. GREAT EXPECTATIONS",
         "python validation_gx.py"
     )
 
-    # 3. Rapport HTML
+    # ========================================================
+    # 3. GENERATION DU RAPPORT HTML
+    # ========================================================
+
     lancer_commande(
         "3. GENERATION DU RAPPORT",
         "python rapport/rapport_qualite.py"
     )
+
+    # ========================================================
+    # 4. OUVERTURE AUTOMATIQUE DU RAPPORT
+    # ========================================================
+
+    rapport_path = os.path.abspath(
+        "reports/rapport_qualite.html"
+    )
+
+    if os.path.exists(rapport_path):
+        print("\nOuverture du rapport dans le navigateur...")
+        webbrowser.open(
+            "file:///" + rapport_path.replace("\\", "/")
+        )
+    else:
+        print(
+            "\n⚠️ Le rapport HTML est introuvable :",
+            rapport_path
+        )
+
+    # ========================================================
+    # FIN
+    # ========================================================
 
     print("\n" + "=" * 60)
     print("PIPELINE DATA QUALITY TERMINÉ ✅")

@@ -1,5 +1,4 @@
 import os
-import random
 import sys
 import dlt
 
@@ -17,9 +16,8 @@ def parse_plante_maladie(nom_dossier):
     return plante, maladie
 
 
-def generer_metadonnees(raw_dir=RAW_DATA_DIR, seed=42):
+def generer_metadonnees(raw_dir=RAW_DATA_DIR):
     """Parcourt data/raw et génère la liste des métadonnées de chaque image."""
-    random.seed(seed)
     metadonnees = []
 
     for nom_dossier in os.listdir(raw_dir):
@@ -31,26 +29,15 @@ def generer_metadonnees(raw_dir=RAW_DATA_DIR, seed=42):
         plante, maladie = parse_plante_maladie(nom_dossier)
 
         for nom_image in os.listdir(chemin_dossier):
-            # On ignore les fichiers qui ne sont pas des images valides
-            # (ex: fichiers systeme residuels comme les fichiers SVN)
             if not nom_image.lower().endswith((".jpg", ".jpeg", ".png")):
                 continue
 
             chemin_image = os.path.join(chemin_dossier, nom_image)
 
-            r = random.random()
-            if r < 0.70:
-                split = "train"
-            elif r < 0.85:
-                split = "val"
-            else:
-                split = "test"
-
             metadonnees.append({
                 "chemin_image": chemin_image,
                 "plante": plante,
                 "maladie": maladie,
-                "split": split,
             })
 
     return metadonnees

@@ -1,0 +1,127 @@
+# =============================================================================
+# docker-compose.yml — Stack complète "Plant Disease Detection"
+# =============================================================================
+# Ce fichier orchestre 3 services :
+#   1. api      → API FastAPI de prédiction (port 8000)
+#   2. mlflow   → Serveur MLflow pour le tracking/registry des modèles (port 5000)
+#   3. dagster  → Orchestrateur de pipelines de données (port 3000)
+#
+# Les 3 services partagent le réseau "plant-network" et se joignent par leur
+# nom de service (ex: http://mlflow:5000 au lieu de localhost:5000).
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # SERVICE 1 : API FastAPI
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      # Contexte de build = dossier api/ (contient Dockerfile ET requirements.txt)
+      # Plus besoin d'utiliser la racine du projet : api/requirements.txt est
+      # léger et dédié à l'API — contrairement au requirements.txt racine
+      # qui embarque tensorflow, opencv, pandas, etc. inutiles dans le conteneur.
+      context: ./api
+      dockerfile: Dockerfile
+
+    container_name: plant-api
+
+    ports:
+      # <port_hote>:<port_conteneur>
+      - "8000:8000"
+
+    environment:
+      # URI du serveur MLflow : on utilise le NOM du service Docker ("mlflow"),
+      # pas "localhost" (qui pointerait sur l'API elle-même dans son conteneur)
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+    depends_on:
+      # L'API attend que MLflow soit démarré avant de se lancer
+      # (évite les erreurs de connexion au démarrage si l'API cherche un modèle)
+      mlflow:
+        condition: service_started
+
+    networks:
+      - plant-network
+
+    restart: on-failure
+
+  # ---------------------------------------------------------------------------
+  # SERVICE 2 : Serveur MLflow
+  # Géré par P6 — ce service expose le tracking server et le model registry.
+  # Les runs et artefacts sont persistés via un volume Docker.
+  # ---------------------------------------------------------------------------
+  mlflow:
+    # Utilisation de l'image officielle MLflow (évite d'installer manuellement)
+    image: ghcr.io/mlflow/mlflow:latest
+
+    container_name: plant-mlflow
+
+    ports:
+      # Interface web MLflow accessible sur http://localhost:5000
+      - "5000:5000"
+
+    volumes:
+      # Persistance des données MLflow entre les redémarrages :
+      # ./mlruns (sur l'hôte) ↔ /mlflow/mlruns (dans le conteneur)
+      # - backend store  → mlflow.db  (SQLite, métadonnées : params, métriques, runs)
+      # - artifact root  → sous-dossiers (fichiers : modèles, graphiques, etc.)
+      - ./mlruns:/mlflow/mlruns
+
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlruns/mlflow.db
+      --default-artifact-root /mlflow/mlruns
+
+    networks:
+      - plant-network
+
+    restart: on-failure
+
+  # ---------------------------------------------------------------------------
+  # SERVICE 3 : Dagster (Orchestrateur de pipelines)
+  # TODO: P5 (Btissam) complètera la config spécifique de ses assets ici
+  #       (définition des assets, jobs, schedules Dagster, volumes pour les
+  #       données, etc.)
+  # ---------------------------------------------------------------------------
+  dagster:
+    # Image Python de base — Dagster sera installé au démarrage du conteneur.
+    # P5 pourra remplacer ça par une image custom avec un Dockerfile dédié.
+    image: python:3.11-slim
+
+    container_name: plant-dagster
+
+    ports:
+      # Interface web Dagster (Dagit) accessible sur http://localhost:3000
+      - "3000:3000"
+
+    command: >
+      bash -c "pip install dagster dagster-webserver --quiet &&
+               dagster dev --host 0.0.0.0 --port 3000"
+
+    networks:
+      - plant-network
+
+    restart: on-failure
+
+# =============================================================================
+# RÉSEAU COMMUN
+# =============================================================================
+# Réseau bridge dédié : les 3 services se voient par leur nom de service.
+# Ex : depuis l'API, http://mlflow:5000 fonctionne automatiquement.
+networks:
+  plant-network:
+    driver: bridge
+
+# =============================================================================
+# VOLUMES NOMMÉS
+# =============================================================================
+# (optionnel) Si tu préfères des volumes Docker gérés plutôt que des bind mounts,
+# décommente la section ci-dessous et remplace ./mlruns par mlflow-data dans le
+# service mlflow.
+#
+# volumes:
+#   mlflow-data:
+#     driver: local

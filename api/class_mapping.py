@@ -5,10 +5,8 @@ Mapping des noms bruts de classes PlantVillage vers des libellés lisibles en fr
 destinés à l'agriculteur utilisateur final.
 """
 
-from typing import Tuple
-
 # Dictionnaire : nom de classe brut → (plante, maladie) en français
-CLASS_MAPPING: dict[str, Tuple[str, str]] = {
+CLASS_MAPPING: dict[str, tuple[str, str]] = {
     "Pepper__bell___Bacterial_spot": (
         "Poivron",
         "Tache bactérienne",
@@ -72,7 +70,7 @@ CLASS_MAPPING: dict[str, Tuple[str, str]] = {
 }
 
 
-def parse_class_name(raw_class: str) -> Tuple[str, str]:
+def parse_class_name(raw_class: str) -> tuple[str, str]:
     """Renvoie (plante, maladie) lisibles en français pour une classe brute.
 
     Args:

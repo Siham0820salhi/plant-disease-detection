@@ -5,8 +5,8 @@ Application FastAPI pour la détection de maladies des feuilles de plantes.
 Endpoint principal : POST /predict — reçoit une image et renvoie un diagnostic.
 """
 
-import random
 from pathlib import Path
+import random
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -93,7 +93,7 @@ async def health_check() -> HealthOutput:
 
 
 @app.post("/predict", response_model=PredictionOutput, summary="Diagnostic d'une feuille de plante")
-async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:
+async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  # noqa: B008
     """Reçoit une image de feuille et renvoie un diagnostic (plante + maladie + confiance).
 
     Args:

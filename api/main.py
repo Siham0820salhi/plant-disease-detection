@@ -5,14 +5,18 @@ Application FastAPI pour la détection de maladies des feuilles de plantes.
 Endpoint principal : POST /predict — reçoit une image et renvoie un diagnostic.
 """
 
-from pathlib import Path
 import random
+from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from class_mapping import CLASS_MAPPING, parse_class_name
-from models import HealthOutput, PredictionOutput
+try:
+    from api.class_mapping import CLASS_MAPPING, parse_class_name
+    from api.models import HealthOutput, PredictionOutput
+except ImportError:
+    from class_mapping import CLASS_MAPPING, parse_class_name
+    from models import HealthOutput, PredictionOutput
 
 # ---------------------------------------------------------------------------
 # Constantes

@@ -1,17 +1,4 @@
-"""
-data_loaders.py
-----------------
-Personne 6 - ML Engineer : Modèle + MLflow
 
-Rôle (Tâche 1 du cahier des charges) :
-  - Récupérer les images prétraitées (train/val/test) de Personne 4
-  - Construire les générateurs (batching, augmentation à la volée)
-
-Contient aussi le filtrage des images augmentées hors-ligne par P4
-(fichiers préfixés "aug_", voir augmentation.py de P4), nécessaire pour
-comparer proprement class_weight vs augmentation ciblée (Tâche 2) sans
-jamais cumuler deux augmentations sur les mêmes images.
-"""
 
 from pathlib import Path
 
@@ -24,11 +11,10 @@ IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
 DATA_DIR = Path("data/processed")
 
-# Comparaison insensible à la casse : un simple glob("*.jpg") ignorerait
-# silencieusement les fichiers .JPG (bug fréquent sous Windows).
+
 _IMG_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 
-OFFLINE_AUGMENTED_PREFIX = "aug_"  # doit rester synchronisé avec augmentation.py de P4
+OFFLINE_AUGMENTED_PREFIX = "aug_"  
 
 
 # ============================================================
@@ -36,16 +22,7 @@ OFFLINE_AUGMENTED_PREFIX = "aug_"  # doit rester synchronisé avec augmentation.
 # ============================================================
 
 def build_train_dataframe(train_dir: Path, include_offline_augmented: bool = True) -> pd.DataFrame:
-    """
-    Scanne train_dir/<classe>/*.* et retourne un DataFrame [path, classe].
-
-    - include_offline_augmented=True  : toutes les images (originales +
-      images "aug_*" ajoutées hors-ligne par P4). Comportement historique.
-    - include_offline_augmented=False : uniquement les images originales
-      (les fichiers "aug_*" de P4 sont exclus). Utile pour mesurer le
-      déséquilibre réel du dataset brut, ou pour tester class_weight /
-      l'augmentation en ligne sans double augmentation.
-    """
+   
     train_dir = Path(train_dir)
 
     if not train_dir.exists():
@@ -94,24 +71,7 @@ def build_generators(
     preprocessing_function=None,
     include_offline_augmented: bool = True,
 ):
-    """
-    Retourne (train_gen, val_gen, test_gen, class_indices).
-
-    - preprocessing_function : fonction de prétraitement spécifique au
-      modèle (ex: tensorflow.keras.applications.resnet50.preprocess_input).
-      Si None, on utilise un simple rescale=1/255 (baseline_cnn).
-    - augment_online : active/désactive l'augmentation EN LIGNE (à la
-      volée, appliquée par Keras à chaque epoch). Dimension INDÉPENDANTE
-      de include_offline_augmented (l'augmentation hors-ligne de P4,
-      déjà présente sur disque) : les deux ne sont jamais combinées dans
-      les stratégies définies par train.py, pour éviter un cumul de
-      distorsions sur les mêmes images.
-    - include_offline_augmented : si False, exclut du train set les
-      images "aug_*" ajoutées hors-ligne par P4.
-    - val_gen / test_gen : jamais d'augmentation (ni offline ni online),
-      via flow_from_directory (P4 n'augmente que le train, rien à
-      filtrer ici).
-    """
+   
     data_dir = Path(data_dir)
 
     base_kwargs = (
@@ -167,15 +127,7 @@ def build_generators(
 
 
 def compute_class_weights(train_gen) -> dict:
-    """
-    Calcule les class_weight (stratégie 'balanced') à partir des labels
-    du générateur d'entraînement, pour compenser le déséquilibre entre
-    classes.
-
-    .tolist() : convertit les clés/valeurs numpy en types Python natifs,
-    pour éviter des soucis de sérialisation (ex. lors du logging MLflow
-    ou de tests de comparaison).
-    """
+   
     labels = train_gen.classes  # array d'entiers, un par image
     classes = np.unique(labels)
     weights = compute_class_weight(

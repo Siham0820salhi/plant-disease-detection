@@ -1,19 +1,4 @@
-"""
-evaluate.py
------------
-Personne 6 - ML Engineer : Modèle + MLflow
 
-Rôle (Tâche 4 du cahier des charges) : évaluation complète d'un modèle
-- accuracy, precision/recall/F1 macro (important car 15 classes, dont
-  certaines très minoritaires)
-- matrice de confusion
-- courbes d'apprentissage
-Ne jamais se fier uniquement à l'accuracy globale.
-
-matplotlib.use("Agg") : backend sans affichage interactif, nécessaire
-pour exécuter ce module dans un environnement serveur/headless (scripts,
-CI/CD de P7, assets Dagster de P5) où aucun écran n'est disponible.
-"""
 
 from pathlib import Path
 
@@ -26,11 +11,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 
 
 def evaluate_model(model, test_gen, class_names: list) -> dict:
-    """
-    Fait des prédictions sur test_gen et calcule toutes les métriques.
-    Retourne un dict prêt à être loggé dans MLflow, incluant "report_dict"
-    (métriques par classe, format numérique exploitable).
-    """
+    
     test_gen.reset()
     y_true = test_gen.classes
     y_pred_probs = model.predict(test_gen, verbose=0)
@@ -61,11 +42,7 @@ def evaluate_model(model, test_gen, class_names: list) -> dict:
 
 
 def per_class_f1_metrics(report_dict: dict) -> dict:
-    """
-    Extrait uniquement le f1-score par classe du report_dict, avec des
-    noms de métriques MLflow-safe (préfixe 'f1_', pas d'espaces/slashs/
-    virgules). Ignore les clés globales (accuracy, macro avg, weighted avg).
-    """
+    
     ignore_keys = {"accuracy", "macro avg", "weighted avg"}
     metrics = {}
     for class_name, values in report_dict.items():
@@ -77,7 +54,6 @@ def per_class_f1_metrics(report_dict: dict) -> dict:
 
 
 def plot_confusion_matrix(cm: np.ndarray, class_names: list, out_path: Path):
-    """Sauvegarde la matrice de confusion en PNG (pour artefact MLflow)."""
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -95,7 +71,6 @@ def plot_confusion_matrix(cm: np.ndarray, class_names: list, out_path: Path):
 
 
 def plot_learning_curves(history, out_path: Path):
-    """Sauvegarde les courbes loss/accuracy train vs val (pour artefact MLflow)."""
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 

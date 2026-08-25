@@ -1,77 +1,4 @@
-"""
-train.py
---------
-Personne 6 - ML Engineer : Modèle + MLflow
 
-Couvre les tâches 1 à 7 du cahier des charges :
-  1. Data loaders / générateurs (batching, augmentation à la volée)
-     -- voir data_loaders.py.
-  2. Gestion du déséquilibre : class_weight='balanced' OU augmentation
-     ciblée (P4) -- comparaison explicite via --imbalance-strategy.
-  3. Entraînement de plusieurs modèles (baseline CNN + transfer
-     learning) -- voir models.py.
-  4. Évaluation complète (accuracy, precision, recall, F1-macro,
-     matrice de confusion, courbes d'apprentissage) -- voir evaluate.py.
-  5. MLflow Tracking : params, métriques (globales + par classe),
-     modèle en artefact avec signature, graphiques.
-  6. Model Registry : alias "production" mis à jour SEULEMENT si le
-     nouveau modèle est meilleur que l'actuel (jamais de downgrade).
-  7. run_training() est découplée d'argparse : appelable directement
-     depuis Dagster (P5) sans dépendre de sys.argv.
-
-Utilisation :
-
-  1) En ligne de commande, UNE stratégie (comportement simple) :
-      python train.py --model baseline_cnn --epochs 15
-      python train.py --model all --epochs 10
-      python train.py --model resnet50 --epochs 10 --imbalance-strategy both
-
-  2) En ligne de commande, PLUSIEURS stratégies à comparer (remplace
-     l'ancien compare_strategies.py -- tout est maintenant ici) :
-      python train.py --model baseline_cnn --epochs 10 \
-          --imbalance-strategy class_weight augmentation_p4
-      python train.py --model all --epochs 10 \
-          --imbalance-strategy class_weight augmentation_p4
-     Entraîne toutes les combinaisons modèle x stratégie demandées,
-     affiche un tableau comparatif des f1_macro, et enregistre
-     AUTOMATIQUEMENT le vrai meilleur run (toutes combinaisons
-     confondues) dans le Model Registry, alias "production" (jamais de
-     downgrade -- voir register_best_model()).
-
-  3) Importé directement par Personne 5 depuis un asset Dagster,
-     SANS dépendre d'argparse/sys.argv :
-      from train import run_training
-      # une seule stratégie :
-      run_training(model="resnet50", epochs=10, imbalance_strategy="class_weight")
-      # plusieurs stratégies à comparer, meilleure enregistrée automatiquement :
-      run_training(model="all", epochs=10,
-                    imbalance_strategy=["class_weight", "augmentation_p4"])
-
---imbalance-strategy contrôle DEUX choses en même temps, pour ne jamais
-cumuler augmentation offline (P4) et augmentation online (P6) sur les
-mêmes images :
-
-    none                 : train set propre (sans aug_ de P4)
-                            + pas de class_weight + pas d'augmentation online
-    class_weight          : train set propre + class_weight='balanced'
-    augmentation_p4        : train set complet (AVEC aug_ de P4, l'augmentation
-                            ciblée hors-ligne demandée par le cahier des
-                            charges) + pas de class_weight + pas d'augmentation
-                            online
-    augmentation_online    : train set propre + augmentation en ligne
-                            (ImageDataGenerator) + pas de class_weight
-    both                  : train set propre + class_weight + augmentation
-                            en ligne (jamais avec aug_ de P4, pour éviter un
-                            double comptage)
-    auto                  : analyse le ratio de déséquilibre sur les images
-                            ORIGINALES et choisit automatiquement l'une des
-                            5 stratégies ci-dessus. Pratique pour un run
-                            "production" autonome et rapide (ex. Dagster).
-
-Pour comparer explicitement plusieurs stratégies (exigence du cahier des
-charges), passez une LISTE de stratégies à --imbalance-strategy (CLI) ou
-à imbalance_strategy= (run_training) -- voir usage 2) et 3) ci-dessus.
-"""
 
 import argparse
 import os
@@ -100,15 +27,12 @@ IMBALANCE_STRATEGIES = [
     "both",
 ]
 
-# Seuils de départ pour le mode "auto" -- valeurs raisonnables mais PAS
-# validées scientifiquement sur ce dataset précis, à ajuster après
-# observation des résultats réels (comparez plusieurs valeurs de
-# --imbalance-strategy explicitement, voir usage 2 en tête de fichier).
+
 AUTO_STRATEGY_THRESHOLDS = [
-    (2,  "none"),               # ratio < 2        : déséquilibre négligeable
-    (5,  "class_weight"),       # 2  <= ratio < 5   : déséquilibre modéré
-    (15, "augmentation_p4"),    # 5  <= ratio < 15  : déséquilibre marqué
-    # ratio >= 15 : déséquilibre sévère -> "both"
+    (2,  "none"),              
+    (5,  "class_weight"),       
+    (15, "augmentation_p4"),    
+   
 ]
 
 
@@ -167,18 +91,7 @@ def _resolve_strategy_flags(strategy: str) -> tuple:
 def train_one_model(model_name: str, epochs: int, batch_size: int,
                      imbalance_strategy: str, fine_tune: bool,
                      requested_strategy: str = None, imbalance_ratio: float = None):
-    """
-    Entraîne UN modèle avec son propre prétraitement et sa stratégie de
-    gestion du déséquilibre, logge tout dans MLflow (params, tags,
-    métriques globales ET par classe, artefacts, modèle signé), et
-    retourne (run_id, f1_macro).
-
-    - imbalance_strategy : stratégie RÉELLEMENT appliquée (jamais "auto"
-      à ce stade, déjà résolue par run_training()).
-    - requested_strategy : ce que l'utilisateur a demandé à l'origine
-      ("auto" ou une stratégie explicite). Loggé pour traçabilité.
-    - imbalance_ratio : ratio de déséquilibre mesuré, si connu (mode auto).
-    """
+   
     use_class_weights, augment_online, include_offline_augmented = _resolve_strategy_flags(
         imbalance_strategy
     )
@@ -265,13 +178,7 @@ def train_one_model(model_name: str, epochs: int, batch_size: int,
         sample_batch_x, _ = next(train_gen)
         input_example = sample_batch_x[:1]
         signature = infer_signature(input_example, model.predict(input_example, verbose=0))
-        # CORRECTION (2e tentative) : le renommage artifact_path -> name
-        # n'a pas suffi, le bug persiste. La cause réelle est la
-        # sérialisation de input_example en JSON, qui échoue sous Windows
-        # avec MLflow 3.15.1 (chemin temporaire mal créé). On retire
-        # input_example : la signature seule suffit pour donner à P7 le
-        # contrat d'entrée/sortie du modèle (format, dtype, shape), sans
-        # déclencher ce bug de sérialisation.
+       
         mlflow.keras.log_model(
             model,
             name="model",
@@ -333,45 +240,19 @@ def register_best_model(best_run_id: str, best_model_name: str, best_f1: float):
 
 def run_training(model: str = "all", epochs: int = 15, batch_size: int = 32,
                   imbalance_strategy="class_weight", fine_tune: bool = False):
-    """
-    Fonction réutilisable, appelable directement depuis Dagster (P5) :
-        from train import run_training
-        run_id, model_name, f1 = run_training(model="resnet50", epochs=20)
-    Ne dépend PAS de sys.argv/argparse -- c'est ce qui la rend
-    "Dagster-ready" (Tâche 7).
-
-    TOUT est fait dans cette seule fonction, en un seul appel :
-      - entraînement d'un ou plusieurs modèles (model="all" ou un nom précis)
-      - comparaison d'une ou plusieurs stratégies de déséquilibre
-        (imbalance_strategy peut être une chaîne UNIQUE, ex. "class_weight",
-        OU une LISTE, ex. ["class_weight", "augmentation_p4"], pour comparer
-        plusieurs stratégies sans script séparé)
-      - sélection du VRAI meilleur run (f1_macro le plus élevé, toutes
-        combinaisons modèle x stratégie confondues)
-      - enregistrement automatique de CE SEUL run au Model Registry
-        (register_best_model gère déjà la protection anti-downgrade)
-
-    Un échec sur une combinaison modèle/stratégie (ex. disque plein)
-    n'interrompt PAS les autres : il est catché, loggé, et le pipeline
-    continue.
-    """
+  
     tracking_uri = os.environ.get("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db")
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(EXPERIMENT_NAME)
 
-    # Normalisation : imbalance_strategy peut être une chaîne unique
-    # ("class_weight", "auto", ...) ou une liste de stratégies à comparer
-    # (["class_weight", "augmentation_p4"]). On travaille ensuite toujours
-    # sur une liste, en interne, pour ne pas dupliquer la logique.
+   
     strategies_requested = (
         list(imbalance_strategy)
         if isinstance(imbalance_strategy, (list, tuple))
         else [imbalance_strategy]
     )
 
-    # Le mode "auto" est résolu UNE SEULE FOIS pour tout le run : le ratio
-    # de déséquilibre est une propriété du dataset, pas du modèle ni de
-    # la stratégie.
+    
     imbalance_ratio = None
     if strategies_requested == ["auto"]:
         imbalance_ratio, _counts = compute_imbalance_ratio(DATA_DIR)
@@ -387,10 +268,7 @@ def run_training(model: str = "all", epochs: int = 15, batch_size: int = 32,
     failed_runs = []
     all_results = []
 
-    # Boucle sur TOUTES les combinaisons modèle x stratégie demandées --
-    # c'est ce qui remplace compare_strategies.py pour le pipeline
-    # "officiel" appelé par Dagster : une seule fonction fait la
-    # comparaison ET la décision finale.
+    
     for model_name in models_to_run:
         for strategy in resolved_strategies:
             print("\n" + "=" * 70)
@@ -475,8 +353,7 @@ def parse_args():
 def main():
     """Point d'entrée CLI uniquement -- toute la logique est dans run_training()."""
     args = parse_args()
-    # Une seule stratégie en CLI -> on la passe telle quelle (rétrocompatible) ;
-    # plusieurs -> run_training() les compare et enregistre la meilleure.
+    
     strategy_arg = args.imbalance_strategy[0] if len(args.imbalance_strategy) == 1 \
         else args.imbalance_strategy
     run_training(

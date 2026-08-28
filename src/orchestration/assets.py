@@ -38,17 +38,22 @@ def asset_preprocessing(context: AssetExecutionContext, asset_ingestion):
     return "Preprocessing completed"
 
 
-# Asset 3 : Entraînement Modèle (Prêt pour brancher train.py de P6)
+# Asset 3 : Entraînement Modèle (Branché avec P6)
 @asset(ins={"asset_preprocessing": AssetIn()})
 def asset_train_model(context: AssetExecutionContext, asset_preprocessing):
     """Entraînement du modèle CNN / Transfer Learning"""
-    context.log.info("Démarrage de l'entraînement du modèle...")
+    context.log.info("Démarrage de l'entraînement du modèle (P6)...")
     
-    # Mnin Chaimae (P6) t-3tik train.py, y-t-lansa hakka :
-    # result = subprocess.run([sys.executable, "train.py"], capture_output=True, text=True)
-    # if result.returncode != 0:
-    #     context.log.error(f"[ALERTE ECHEC] Training a échoué : {result.stderr}")
-    #     raise Exception(f"Training failed: {result.stderr}")
+    # Appel dial le script train.py li f src/training/
+    result = subprocess.run(
+        [sys.executable, "src/training/train.py"],
+        capture_output=True,
+        text=True
+    )
+    
+    if result.returncode != 0:
+        context.log.error(f"[ALERTE ECHEC] Training a échoué : {result.stderr}")
+        raise Exception(f"Training failed: {result.stderr}")
 
-    context.log.info("Modèle entraîné et enregistré avec succès.")
+    context.log.info("Modèle entraîné et enregistré avec succès dans MLflow.")
     return "Model Trained Successfully"

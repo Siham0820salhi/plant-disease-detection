@@ -19,3 +19,5 @@ models/
 .vscode/
 # DuckDB
 *.duckdb
+
+debug_model.py

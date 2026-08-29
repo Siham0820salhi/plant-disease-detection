@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 
+import pytest
 client = TestClient(app)
 
 
@@ -18,11 +19,11 @@ def test_health_returns_200() -> None:
 
 
 def test_health_response_body() -> None:
-    """GET /health doit retourner le JSON attendu avec status='ok' et model_version='dummy-v0'."""
+    """GET /health doit retourner le JSON attendu avec status='ok' et model_version rensigne."""
     response = client.get("/health")
     data = response.json()
     assert data["status"] == "ok"
-    assert data["model_version"] == "dummy-v0"
+    assert data["model_version"] == "resnet50-v10-production"
 
 
 def test_health_response_keys() -> None:
@@ -30,3 +31,15 @@ def test_health_response_keys() -> None:
     response = client.get("/health")
     data = response.json()
     assert set(data.keys()) == {"status", "model_version"}
+
+
+def test_health_returns_unavailable_without_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    """GET /health doit renvoyer 'unavailable' si le modele n'est pas charge."""
+    import api.main as main_module
+
+    monkeypatch.setattr(main_module, "model", None)
+    monkeypatch.setattr(main_module, "model_loaded", False)
+
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["model_version"] == "unavailable"

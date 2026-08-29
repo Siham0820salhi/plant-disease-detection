@@ -12,10 +12,9 @@
 #     - tensorflow      → si P6 utilise un modèle Keras/TF (SavedModel ou .h5)
 #     - torch torchvision → si P6 utilise PyTorch à la place
 #     - numpy           → probablement nécessaire pour le prétraitement des images
-#   Exemple :
-#     mlflow==2.x.x
-#     tensorflow==2.x.x   # ou : torch==x.x.x torchvision==x.x.x
-#     numpy
+ mlflow==3.15.1
+ tensorflow==2.21.0  
+ numpy==2.4.6
 # =============================================================================
 
 # Serveur web ASGI

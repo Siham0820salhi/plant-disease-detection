@@ -46,6 +46,9 @@ WORKDIR /app
 # et NE PAS toucher au requirements.txt racine (réservé aux autres membres).
 COPY requirements.txt .
 
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
@@ -71,7 +74,7 @@ EXPOSE 8000
 # --timeout     : délai maximum pour qu'une vérification réussisse
 # --start-period: délai de grâce au démarrage (chargement du modèle, etc.)
 # --retries     : échecs consécutifs avant de déclarer le conteneur "unhealthy"
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" \
     || exit 1
 

@@ -35,6 +35,14 @@ services:
       # pas "localhost" (qui pointerait sur l'API elle-même dans son conteneur)
       - MLFLOW_TRACKING_URI=http://mlflow:5000
 
+
+    volumes:
+      # Nécessaire : les artefacts (poids du modèle) enregistrés par MLflow
+      # utilisent un chemin de fichier local (file:///mlflow/mlruns/...).
+      # L'API doit avoir accès au même chemin, à l'identique, pour pouvoir
+      # les charger — pas seulement parler au serveur MLflow en HTTP.
+      - ./mlruns:/mlflow/mlruns 
+
     depends_on:
       # L'API attend que MLflow soit démarré avant de se lancer
       # (évite les erreurs de connexion au démarrage si l'API cherche un modèle)
@@ -43,8 +51,13 @@ services:
 
     networks:
       - plant-network
-
+      # signifie que ton conteneur api est connecté au réseau Docker appelé : plant-network
+      # Grâce au réseau Docker, les conteneurs peuvent communiquer entre eux.
+    
     restart: on-failure
+      # Cela indique à Docker : Si le conteneur s'arrête à cause d'une erreur, 
+      # essaie de le redémarrer automatiquement. 
+
 
   # ---------------------------------------------------------------------------
   # SERVICE 2 : Serveur MLflow
@@ -74,7 +87,7 @@ services:
       --port 5000
       --backend-store-uri sqlite:////mlflow/mlruns/mlflow.db
       --default-artifact-root /mlflow/mlruns
-
+      --allowed-hosts "*"
     networks:
       - plant-network
 

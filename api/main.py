@@ -10,7 +10,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Any
-
+import time 
 import numpy as np
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,9 +19,11 @@ from PIL import Image
 try:
     from api.class_mapping import CLASS_MAPPING, parse_class_name
     from api.models import HealthOutput, PredictionOutput
+    from api.monitoring import metrics_store
 except ImportError:
     from class_mapping import CLASS_MAPPING, parse_class_name
     from models import HealthOutput, PredictionOutput
+    from monitoring import metrics_store
 
 logging.basicConfig(level=logging.INFO)
 
@@ -166,7 +168,7 @@ async def health_check() -> HealthOutput:
 
 
 @app.post("/predict", response_model=PredictionOutput, summary="Diagnostic d'une feuille de plante")
-async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  # noqa: B008
+async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  
     """Reçoit une image de feuille et renvoie un diagnostic (plante + maladie + confiance).
 
     Args:
@@ -175,6 +177,7 @@ async def predict(file: UploadFile = File(..., description="Image de la feuille 
     Returns:
         PredictionOutput avec la plante, la maladie et le score de confiance.
     """
+    start_time = time.perf_counter()
     content: bytes = await file.read()
 
     # Validation du fichier
@@ -200,5 +203,8 @@ async def predict(file: UploadFile = File(..., description="Image de la feuille 
     raw_class = CLASS_NAMES[class_index]
     plante, maladie = parse_class_name(raw_class)
     confidence = float(probabilities[class_index])
+
+    response_time_ms = (time.perf_counter() - start_time) * 1000  
+    metrics_store.log(response_time_ms, maladie, confidence)  
 
     return PredictionOutput(plante=plante, maladie=maladie, confidence=confidence)

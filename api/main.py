@@ -8,9 +8,10 @@ Endpoint principal : POST /predict — reçoit une image et renvoie un diagnosti
 import io
 import logging
 import os
+import time
 from pathlib import Path
 from typing import Any
-import time 
+
 import numpy as np
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -168,7 +169,7 @@ async def health_check() -> HealthOutput:
 
 
 @app.post("/predict", response_model=PredictionOutput, summary="Diagnostic d'une feuille de plante")
-async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  
+async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  # noqa: B008
     """Reçoit une image de feuille et renvoie un diagnostic (plante + maladie + confiance).
 
     Args:

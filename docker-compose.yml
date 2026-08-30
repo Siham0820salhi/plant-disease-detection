@@ -95,24 +95,32 @@ services:
 
   # ---------------------------------------------------------------------------
   # SERVICE 3 : Dagster (Orchestrateur de pipelines)
-  # TODO: P5 (Btissam) complètera la config spécifique de ses assets ici
-  #       (définition des assets, jobs, schedules Dagster, volumes pour les
-  #       données, etc.)
+  # Config assets/schedule fournie par P5 (Btissam) - src/orchestration/
   # ---------------------------------------------------------------------------
   dagster:
-    # Image Python de base — Dagster sera installé au démarrage du conteneur.
-    # P5 pourra remplacer ça par une image custom avec un Dockerfile dédié.
-    image: python:3.11-slim
-
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dagster
+      
     container_name: plant-dagster
+
+    working_dir: /app
+
+    volumes:
+      # Tout le projet est monte : les assets de P5 appellent des scripts
+      # (pipeline_ingestion.py, preprocessing.py, src/training/train.py) via
+      # des chemins relatifs a la racine du projet.
+      - .:/app
+      # Persistance de l'historique des runs Dagster (sinon perdu a chaque
+      # redemarrage du conteneur).
+      - ./dagster_home:/app/dagster_home
 
     ports:
       # Interface web Dagster (Dagit) accessible sur http://localhost:3000
       - "3000:3000"
 
-    command: >
-      bash -c "pip install dagster dagster-webserver --quiet &&
-               dagster dev --host 0.0.0.0 --port 3000"
+    environment:
+      - DAGSTER_HOME=/app/dagster_home
 
     networks:
       - plant-network
@@ -130,7 +138,7 @@ networks:
 
 # =============================================================================
 # VOLUMES NOMMÉS
-# =============================================================================
+# ====================a=========================================================
 # (optionnel) Si tu préfères des volumes Docker gérés plutôt que des bind mounts,
 # décommente la section ci-dessous et remplace ./mlruns par mlflow-data dans le
 # service mlflow.

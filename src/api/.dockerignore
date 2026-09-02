@@ -1,0 +1,54 @@
+# =============================================================================
+# .dockerignore — API FastAPI "Plant Disease Detection"
+# =============================================================================
+# Ce fichier indique à Docker quels fichiers/dossiers NE PAS copier dans le
+# contexte de build. Cela garde l'image légère et évite de copier des données
+# sensibles ou inutiles.
+# =============================================================================
+
+# Environnements virtuels Python (très volumineux, inutiles dans le conteneur)
+.venv/
+venv/
+env/
+
+# Fichiers compilés Python (inutiles dans l'image, recréés à la volée)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Tests (non nécessaires en production)
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Contrôle de version
+.git/
+.gitignore
+
+# IDE et outils de dev
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dossiers de données volumineuses (images dataset, etc.)
+data/
+mlruns/
+
+# Documentation et rapports
+docs/
+rapport/
+notebook/
+*.md
+
+# Fichiers spécifiques au projet non nécessaires dans l'API
+augmentation.py
+preprocessing.py
+pipeline_*.py
+validation_gx.py
+detecter_doublons.py
+verifier_donnees.py
+classes_metadata.yaml
+data_contract.yaml

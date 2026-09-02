@@ -1,0 +1,22 @@
+# =============================================================================
+# Dockerfile.dagster — Orchestrateur Dagster (P5)
+# =============================================================================
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Installation des dependances du projet (requirements.txt racine, complet)
+# + dagster/dagster-webserver, non presents dans requirements.txt racine.
+# Cette etape est mise en cache par Docker : tant que requirements.txt ne
+# change pas, un rebuild est quasi instantane (pas de re-telechargement).
+COPY requirements.txt .
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir dagster dagster-webserver
+
+# Le code (src/, scripts P3/P4/P6) sera monte via volume, pas copie ici,
+# pour que les modifications de code n'obligent pas a reconstruire l'image.
+
+EXPOSE 3000
+
+CMD ["dagster", "dev", "-h", "0.0.0.0", "-p", "3000"]

@@ -1,0 +1,31 @@
+# =============================================================================
+# requirements.txt — Dépendances de l'API FastAPI uniquement
+# =============================================================================
+# Ce fichier est intentionnellement léger : il ne contient que ce dont
+# l'API a besoin pour tourner, pas les dépendances lourdes du projet global
+# (tensorflow, opencv, pandas, scikit-learn, dlt, etc.) qui restent dans le
+# requirements.txt à la RACINE pour les autres membres de l'équipe.
+#
+# PHASE 4 — Branchement du vrai modèle MLflow (P6) :
+#   Ajouter ici (et UNIQUEMENT ici, pas dans le requirements.txt racine) :
+#     - mlflow          → pour charger le modèle depuis le registry MLflow
+#     - tensorflow      → si P6 utilise un modèle Keras/TF (SavedModel ou .h5)
+#     - torch torchvision → si P6 utilise PyTorch à la place
+#     - numpy           → probablement nécessaire pour le prétraitement des images
+ mlflow==3.15.1
+ tensorflow==2.21.0  
+ numpy==2.4.6
+# =============================================================================
+
+# Serveur web ASGI
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+
+# Validation des données (modèles de réponse Pydantic)
+pydantic==2.13.4
+
+# Upload de fichiers multipart (nécessaire pour POST /predict)
+python-multipart==0.0.32
+
+# Traitement des images (vérification format, resize avant inférence)
+pillow==12.3.0

@@ -1,0 +1,148 @@
+# =============================================================================
+# docker-compose.yml — Stack complète "Plant Disease Detection"
+# =============================================================================
+# Ce fichier orchestre 3 services :
+#   1. api      → API FastAPI de prédiction (port 8000)
+#   2. mlflow   → Serveur MLflow pour le tracking/registry des modèles (port 5000)
+#   3. dagster  → Orchestrateur de pipelines de données (port 3000)
+#
+# Les 3 services partagent le réseau "plant-network" et se joignent par leur
+# nom de service (ex: http://mlflow:5000 au lieu de localhost:5000).
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # SERVICE 1 : API FastAPI
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      # Contexte de build = dossier api/ (contient Dockerfile ET requirements.txt)
+      # Plus besoin d'utiliser la racine du projet : api/requirements.txt est
+      # léger et dédié à l'API — contrairement au requirements.txt racine
+      # qui embarque tensorflow, opencv, pandas, etc. inutiles dans le conteneur.
+      context: ./src/api
+      dockerfile: Dockerfile
+
+    container_name: plant-api
+
+    ports:
+      # <port_hote>:<port_conteneur>
+      - "8000:8000"
+
+    environment:
+      # URI du serveur MLflow : on utilise le NOM du service Docker ("mlflow"),
+      # pas "localhost" (qui pointerait sur l'API elle-même dans son conteneur)
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+
+    volumes:
+      # Nécessaire : les artefacts (poids du modèle) enregistrés par MLflow
+      # utilisent un chemin de fichier local (file:///mlflow/mlruns/...).
+      # L'API doit avoir accès au même chemin, à l'identique, pour pouvoir
+      # les charger — pas seulement parler au serveur MLflow en HTTP.
+      - ./mlruns:/mlflow/mlruns 
+
+    depends_on:
+      # L'API attend que MLflow soit démarré avant de se lancer
+      # (évite les erreurs de connexion au démarrage si l'API cherche un modèle)
+      mlflow:
+        condition: service_started
+
+    networks:
+      - plant-network
+      # signifie que ton conteneur api est connecté au réseau Docker appelé : plant-network
+      # Grâce au réseau Docker, les conteneurs peuvent communiquer entre eux.
+    
+    restart: on-failure
+      # Cela indique à Docker : Si le conteneur s'arrête à cause d'une erreur, 
+      # essaie de le redémarrer automatiquement. 
+
+
+  # ---------------------------------------------------------------------------
+  # SERVICE 2 : Serveur MLflow
+  # Géré par P6 — ce service expose le tracking server et le model registry.
+  # Les runs et artefacts sont persistés via un volume Docker.
+  # ---------------------------------------------------------------------------
+  mlflow:
+    # Utilisation de l'image officielle MLflow (évite d'installer manuellement)
+    image: ghcr.io/mlflow/mlflow:latest
+
+    container_name: plant-mlflow
+
+    ports:
+      # Interface web MLflow accessible sur http://localhost:5000
+      - "5000:5000"
+
+    volumes:
+      # Persistance des données MLflow entre les redémarrages :
+      # ./mlruns (sur l'hôte) ↔ /mlflow/mlruns (dans le conteneur)
+      # - backend store  → mlflow.db  (SQLite, métadonnées : params, métriques, runs)
+      # - artifact root  → sous-dossiers (fichiers : modèles, graphiques, etc.)
+      - ./mlruns:/mlflow/mlruns
+
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlruns/mlflow.db
+      --default-artifact-root /mlflow/mlruns
+      --allowed-hosts "*"
+    networks:
+      - plant-network
+
+    restart: on-failure
+
+  # ---------------------------------------------------------------------------
+  # SERVICE 3 : Dagster (Orchestrateur de pipelines)
+  # Config assets/schedule fournie par P5 (Btissam) - src/orchestration/
+  # ---------------------------------------------------------------------------
+  dagster:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dagster
+      
+    container_name: plant-dagster
+
+    working_dir: /app
+
+    volumes:
+      # Tout le projet est monte : les assets de P5 appellent des scripts
+      # (pipeline_ingestion.py, preprocessing.py, src/training/train.py) via
+      # des chemins relatifs a la racine du projet.
+      - .:/app
+      # Persistance de l'historique des runs Dagster (sinon perdu a chaque
+      # redemarrage du conteneur).
+      - ./dagster_home:/app/dagster_home
+
+    ports:
+      # Interface web Dagster (Dagit) accessible sur http://localhost:3000
+      - "3000:3000"
+
+    environment:
+      - DAGSTER_HOME=/app/dagster_home
+
+    networks:
+      - plant-network
+
+    restart: on-failure
+
+# =============================================================================
+# RÉSEAU COMMUN
+# =============================================================================
+# Réseau bridge dédié : les 3 services se voient par leur nom de service.
+# Ex : depuis l'API, http://mlflow:5000 fonctionne automatiquement.
+networks:
+  plant-network:
+    driver: bridge
+
+# =============================================================================
+# VOLUMES NOMMÉS
+# ====================a=========================================================
+# (optionnel) Si tu préfères des volumes Docker gérés plutôt que des bind mounts,
+# décommente la section ci-dessous et remplace ./mlruns par mlflow-data dans le
+# service mlflow.
+#
+# volumes:
+#   mlflow-data:
+#     driver: local

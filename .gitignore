@@ -7,3 +7,7 @@ artifacts/
 reports/
 data/
 *.duckdb
+
+debug_model.py
+
+dagster_home/

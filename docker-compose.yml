@@ -21,7 +21,7 @@ services:
       # Plus besoin d'utiliser la racine du projet : api/requirements.txt est
       # léger et dédié à l'API — contrairement au requirements.txt racine
       # qui embarque tensorflow, opencv, pandas, etc. inutiles dans le conteneur.
-      context: ./api
+      context: ./src/api
       dockerfile: Dockerfile
 
     container_name: plant-api

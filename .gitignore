@@ -1,23 +1,11 @@
-﻿# Donnees
-data/raw/
-data/processed/
-# Python
-*.pyc
 __pycache__/
-# Environnements virtuels
+*.pyc
 .venv/
-venv/
-# Variables d'environnement
-.env
-# MLflow
+mlflow.db
 mlruns/
-# Jupyter
-.ipynb_checkpoints/
-# Modeles entraines (optionnel)
-models/
-# VS Code (optionnel)
-.vscode/
-# DuckDB
+artifacts/
+reports/
+data/
 *.duckdb
 
 debug_model.py

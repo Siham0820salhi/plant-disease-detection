@@ -52,4 +52,5 @@ La qualité est l'affaire de tous, sous la supervision de la **Personne 2 (Hiba)
 3. **Revue de code** : Au moins un autre membre de l'équipe doit relire et approuver le code.
 4. **Validation finale** : Le Scrum Master valide le merge après s'être assuré que les tests CI/CD (GitHub Actions) sont au vert.
 
-5. *Maintenu par Hiba (Scrum Master).*
+---
+*Maintenu par Hiba (Scrum Master).*

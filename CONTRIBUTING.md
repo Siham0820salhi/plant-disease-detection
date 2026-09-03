@@ -1,65 +1,51 @@
 # 🚀 Guide de Contribution - Projet Plant Disease Detection
 
-Ce document est la référence pour tous les membres de l'équipe (P1 à P8). Il définit les standards techniques et organisationnels pour assurer la réussite de notre projet MLOps & DataOps. 🎯
+Bienvenue ! Ce document définit les standards de collaboration et les règles techniques pour assurer la réussite de notre projet MLOps & DataOps. 🎯
 
 ---
 
-## 👥 1. Équipe et Responsabilités (MLOps & DataOps)
+## 👥 1. L'Équipe et la Stack Technique 🛠️
 
-| Rôle | Membre | Responsabilités Techniques 🛠️ |
+Chaque membre est responsable d'un maillon de la chaîne MLOps. Voici notre organisation :
+
+| Rôle | Membre | Stack & Responsabilités |
 | :--- | :--- | :--- |
-| **Product Owner** | **Hasnae EL MIR** | Vision du projet, Rédaction des User Stories (GitHub Issues), Backlog. |
-| **Scrum Master** | **Hiba OUAFI** | Agilité (Kanban), Organisation des Sprints, Tests unitaires (Pytest). |
-| **Data Engineer (Ingestion)** | **Khansaa BALAKRAFAS** | Pipeline d'ingestion (dlt), Stockage métadonnées (DuckDB), Kaggle API. |
-| **Data Engineer (Qualité)** | **Salma ZAMAKHCHARI** | Prétraitement d'images, Data Augmentation, Qualité (Great Expectations). |
-| **Orchestration** | **Ibtissam ESSADIKI** | Automatisation des pipelines avec Dagster (Assets & Schedules). |
-| **ML Engineer** | **Chaimaa AFESS** | Entraînement CNN (Transfer Learning), Tracking avec MLflow. |
-| **Déploiement** | **Oumaima TALBI** | API FastAPI, Dockerisation, Pipeline CI/CD (GitHub Actions). |
-| **Data Analyst** | **Siham SALHI** | EDA (Analyse exploratoire), Monitoring (Drift detection), Documentation. |
+| **Product Owner** | **Hasnae EL MIR** | Vision, User Stories, Product Backlog. |
+| **Scrum Master** | **Hiba OUAFI** | Agilité (Kanban), Organisation des Sprints, **Tests unitaires (Pytest)**. |
+| **Data Engineer (Ingestion)** | **Khansaa BALAKRAFAS** | **dlt, DuckDB**, Kaggle API, Ingestion des données. |
+| **Data Engineer (Qualité)** | **Salma ZAMAKHCHARI** | Prétraitement (OpenCV/Pillow), **Great Expectations**. |
+| **Orchestration** | **Ibtissam ESSADIKI** | Automatisation des pipelines avec **Dagster**. |
+| **ML Engineer** | **Chaimaa AFESS** | Entraînement CNN, Tracking & Registry avec **MLflow**. |
+| **Déploiement** | **Oumaima TALBI** | **FastAPI**, Docker, Docker Compose, CI/CD. |
+| **Data Analyst** | **Siham SALHI** | EDA, Monitoring (**Evidently AI**), Documentation. |
 
 ---
 
-## 2. 🌿 Gestion des Branches & Git Flow
-Pour éviter tout conflit sur la branche principale :
-- **`main`** : Code de production uniquement. Protection activée (pas de push direct). 🔒
-- **`dev`** : Branche principale de développement. 🏗️
-- **`feature/[nom-de-la-tâche]`** : Créez une branche pour chaque tâche (ex: `feature/api-fastapi`). 💡
+## 🌿 2. Gestion du Code & Git Flow
+Pour garantir la stabilité du projet, nous suivons ces règles :
+- **Branches** : Protection de `main` 🔒. Toute modification passe par une branche `feature/[nom-tâche]` vers `dev`.
+- **Commits** : Nous suivons la convention *Conventional Commits* :
+  - `feat:` ✨ (nouvelle fonctionnalité)
+  - `fix:` 🐛 (correction de bug)
+  - `docs:` 📝 (documentation)
+  - `test:` ✅ (tests unitaires/qualité)
+  - `ci:` ⚙️ (Docker, GitHub Actions)
 
-### 🏷️ Format des Messages de Commit
-Nous utilisons la convention **Conventional Commits** :
-- `feat:` ✨ (nouvelle fonctionnalité)
-- `fix:` 🐛 (correction de bug)
-- `docs:` 📝 (documentation)
-- `test:` ✅ (ajout de tests unitaires/qualité)
-- `refactor:` ♻️ (nettoyage du code sans changement de logique)
-- `ci:` ⚙️ (modifications liées à GitHub Actions ou Docker)
+## 🧪 3. Qualité et Tests (Mission Hiba)
+La qualité n'est pas une option. Avant toute Pull Request :
+1. **Linting** : Vérifiez votre code avec **Ruff**.
+2. **Tests** : Lancez `pytest` pour valider vos fonctions.
+3. **Data Quality** : Vérifiez vos données avec **Great Expectations** (pour P3/P4).
 
-## 3. 💻 Environnement de Travail
-Avant de commencer à coder, assurez-vous de :
-1. Cloner le repository : `git clone [URL_DU_REPO]`
-2. Créer un environnement virtuel : `python -m venv venv`
-3. Installer les dépendances : `pip install -r requirements.txt`
+## 🔄 4. Workflow de Validation
+- **Pull Request (PR)** : Obligatoire pour fusionner dans `dev` ou `main`.
+- **Revue de code** : Chaque PR doit être relue par un autre membre.
+- **Validation Finale** : Le Scrum Master valide le merge après succès des tests CI/CD.
 
-## 4. ✅ Qualité du Code & Tests
-La qualité est l'affaire de tous, sous la supervision du **Scrum Master (Hiba OUAFI)** :
-
-### 📏 Linting & Formatage
-- Nous utilisons **Ruff** ou **Flake8** pour vérifier la conformité du code Python (PEP8).
-- Vérifiez votre code avant chaque commit.
-
-### 🧪 Tests Unitaires (Pytest)
-- Aucun code ne sera accepté sans test associé.
-- **Emplacement** : Tous les tests doivent être dans le dossier `/tests`.
-- **Commande** : `pytest`
-
-### 📊 Qualité des Données
-- Les pipelines de données (P3 et P4) doivent intégrer des checks de qualité (Great Expectations) pour éviter les données corrompues.
-
-## 5. 🔄 Workflow de Validation (Pull Requests)
-1. Ouvrez une **Pull Request (PR)** dès que votre branche est prête.
-2. Décrivez brièvement vos changements.
-3. **Revue de code** : Au moins un autre membre de l'équipe doit relire et approuver le code. 👀
-4. **Validation finale** : Le Scrum Master valide le merge après s'assurer que les tests CI/CD sont au vert. ✅
+## 📅 5. Agilité et Suivi
+Nous utilisons l'onglet **Projects** de GitHub pour le suivi Kanban. 
+- Déplacez vos tickets de `To Do` ➔ `In Progress` ➔ `Done`.
+- Chaque Sprint fait l'objet d'un rapport dans le dossier `docs/reports`.
 
 ---
-*✍️ Maintenue avec soin par **Hiba OUAFI** (Scrum Master).*
+*✍️ Document maintenu par **Hiba OUAFI** (Scrum Master).*

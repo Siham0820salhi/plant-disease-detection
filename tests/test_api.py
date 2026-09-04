@@ -19,3 +19,14 @@ def test_predict_endpoint_validation():
     )
     # الـ API خاصو يرفض بـ 422 (Unprocessable Entity)
     assert response.status_code == 422
+    
+def test_predict_file_too_large():
+    """Vérifier que l'API refuse les fichiers de plus de 5 Mo (Validation P7)."""
+    # كنصاوبو ملف وهمي فيه كتر من 5 Mo
+    big_file = b"0" * (6 * 1024 * 1024) 
+    response = client.post(
+        "/predict",
+        files={"file": ("large_image.jpg", big_file, "image/jpeg")}
+    )
+    assert response.status_code == 422
+    assert "Fichier trop volumineux" in response.json()["detail"]

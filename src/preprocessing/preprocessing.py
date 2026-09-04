@@ -11,7 +11,8 @@ from sklearn.model_selection import train_test_split
 # 1. PARAMÈTRES
 # ============================================================
 
-RAW_DATA_DIR = "data/raw"
+#RAW_DATA_DIR = "data/raw"
+RAW_DATA_DIR = "data/raw/PlantVillage"
 PROCESSED_DATA_DIR = "data/processed"
 
 TARGET_SIZE = (224, 224)

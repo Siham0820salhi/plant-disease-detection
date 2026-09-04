@@ -13,17 +13,17 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
 try:
     from api.class_mapping import CLASS_MAPPING, parse_class_name
-    from api.models import HealthOutput, PredictionOutput
+    from api.models import HealthOutput, MetricsOutput, PredictionOutput
     from api.monitoring import metrics_store
 except ImportError:
     from class_mapping import CLASS_MAPPING, parse_class_name
-    from models import HealthOutput, PredictionOutput
+    from models import HealthOutput, MetricsOutput, PredictionOutput
     from monitoring import metrics_store
 
 logging.basicConfig(level=logging.INFO)
@@ -157,7 +157,26 @@ def _validate_image_file(file: UploadFile, content: bytes) -> None:
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+# P8: jajout pour le middlware 
+@app.middleware("http")
+async def monitoring_middleware(request: Request, call_next):
+    start_time = time.perf_counter() # enregistre le moment où la requête commence.
 
+    response = await call_next(request)
+
+    response_time_ms = (time.perf_counter() - start_time) * 1000
+
+    if request.url.path == "/predict":
+        prediction = getattr(request.state, "prediction", None)
+
+        if prediction is not None:
+            metrics_store.log(
+                response_time_ms=response_time_ms,
+                maladie=prediction["maladie"],
+                confidence=prediction["confidence"],
+            )
+
+    return response
 
 @app.get("/health", response_model=HealthOutput, summary="Vérification de l'état de l'API")
 async def health_check() -> HealthOutput:
@@ -166,10 +185,17 @@ async def health_check() -> HealthOutput:
         status="ok",
         model_version=MODEL_VERSION if model_loaded else "unavailable",
     )
+#jai ajout ce endpoit
+@app.get("/metrics", response_model=MetricsOutput, summary="Métriques d'utilisation de l'API")
+async def get_metrics() -> MetricsOutput:
+    """Renvoie le nombre de requêtes, la latence moyenne et la distribution des maladies prédites."""
+    return MetricsOutput(**metrics_store.as_metrics_output())
 
 
+
+#jai ajout request: Request dans async def predict
 @app.post("/predict", response_model=PredictionOutput, summary="Diagnostic d'une feuille de plante")
-async def predict(file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  # noqa: B008
+async def predict(request: Request,file: UploadFile = File(..., description="Image de la feuille (.jpg, .jpeg ou .png, max 5 Mo)")) -> PredictionOutput:  # noqa: B008
     """Reçoit une image de feuille et renvoie un diagnostic (plante + maladie + confiance).
 
     Args:
@@ -178,7 +204,6 @@ async def predict(file: UploadFile = File(..., description="Image de la feuille 
     Returns:
         PredictionOutput avec la plante, la maladie et le score de confiance.
     """
-    start_time = time.perf_counter()
     content: bytes = await file.read()
 
     # Validation du fichier
@@ -205,7 +230,13 @@ async def predict(file: UploadFile = File(..., description="Image de la feuille 
     plante, maladie = parse_class_name(raw_class)
     confidence = float(probabilities[class_index])
 
-    response_time_ms = (time.perf_counter() - start_time) * 1000  
-    metrics_store.log(response_time_ms, maladie, confidence)  
+    request.state.prediction = {
+    "maladie": maladie,
+    "confidence": confidence,
+}
+    return PredictionOutput(
+    plante=plante,
+    maladie=maladie,
+    confidence=confidence,
+)  
 
-    return PredictionOutput(plante=plante, maladie=maladie, confidence=confidence)

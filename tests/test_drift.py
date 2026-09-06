@@ -3,6 +3,8 @@ test_drift.py
 -------------
 Teste detect_drift() : pas de drift quand reference == current,
 drift detecte quand les distributions sont tres differentes.
+Teste les deux cas attendus par le prof : référence = actuel (pas de drift) et référence très différente (drift détecté) :
+
 """
 
 import sys

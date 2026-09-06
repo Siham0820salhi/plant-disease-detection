@@ -72,7 +72,8 @@ async def lifespan(_: FastAPI):
         model_version = client.get_model_version_by_alias(
             "plant-disease-classifier", "production"
         )
-        model = mlflow.pyfunc.load_model(model_version.source)
+        # model = mlflow.pyfunc.load_model(model_version.source) lerreur ce trouve ice je le change par ca  
+        model = mlflow.pyfunc.load_model("models:/plant-disease-classifier@production")
         model_loaded = True
         logger.info(
             "Modele MLflow charge avec succes : version=%s source=%s",

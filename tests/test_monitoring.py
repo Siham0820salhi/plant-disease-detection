@@ -3,6 +3,7 @@ test_monitoring.py
 -------------------
 Teste que metrics_store.log() enregistre correctement une prediction,
 en memoire et dans logs/predictions.csv.
+Teste que le middleware/logger enregistre bien une requête (en mémoire + CSV) :
 """
 
 import csv

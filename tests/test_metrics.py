@@ -3,6 +3,7 @@ test_metrics.py
 ----------------
 Teste que MetricsStore calcule correctement total_requests,
 average_latency_ms et disease_distribution.
+Teste que les statistiques (/metrics) sont bien calculées à partir des logs :
 """
 
 import sys

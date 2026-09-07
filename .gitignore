@@ -15,3 +15,4 @@ dagster_home/
 *.db
 !requirements.txt
 mlflow_backup_*.db
+scripts/maintenance/

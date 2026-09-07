@@ -24,6 +24,7 @@ try:
 except ImportError:
     from class_mapping import CLASS_MAPPING, parse_class_name
     from models import HealthOutput, MetricsOutput, PredictionOutput
+
     from monitoring import metrics_store
 
 logging.basicConfig(level=logging.INFO)

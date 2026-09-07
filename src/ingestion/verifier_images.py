@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 
-RAW_DATA_DIR = "data/raw"
+RAW_DATA_DIR = "data/raw/PlantVillage"
 
 
 def verifier_images(raw_dir=RAW_DATA_DIR):

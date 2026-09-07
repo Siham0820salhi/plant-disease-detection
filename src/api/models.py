@@ -44,3 +44,25 @@ class HealthOutput(BaseModel):
             }
         }
     }
+
+class MetricsOutput(BaseModel):
+    """Réponse de l'endpoint /metrics."""
+
+    total_requests: int = Field(..., description="Nombre total de requêtes /predict traitées.")
+    average_latency_ms: float = Field(..., description="Latence moyenne en millisecondes.")
+    disease_distribution: dict[str, int] = Field(
+        ..., description="Nombre de prédictions par maladie détectée."
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "total_requests": 42,
+                "average_latency_ms": 187.4,
+                "disease_distribution": {
+                    "Mildiou (brûlure tardive)": 12,
+                    "Saine (aucune maladie détectée)": 30,
+                },
+            }
+        }
+    }

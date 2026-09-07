@@ -13,3 +13,9 @@ pytest
 dlt
 duckdb
 kaggle
+dagster
+dagster-webserver
+great-expectations
+albumentations
+ruff
+httpx

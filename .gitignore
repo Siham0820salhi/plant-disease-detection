@@ -1,4 +1,4 @@
-__pycache__/
+﻿__pycache__/
 *.pyc
 .venv/
 mlflow.db
@@ -11,3 +11,7 @@ data/
 debug_model.py
 
 dagster_home/
+.tmp_dagster_home_*/
+*.db
+!requirements.txt
+mlflow_backup_*.db

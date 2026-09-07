@@ -1,0 +1,5 @@
+timestamp,latency_ms,disease,confidence
+2026-09-06T21:35:43.756337+00:00,41800.58,Tache bactérienne,1.0
+2026-09-06T21:35:43.791445+00:00,11.38,Tache bactérienne,1.0
+2026-09-06T21:35:43.823956+00:00,9.19,Tache bactérienne,1.0
+2026-09-06T21:35:43.853393+00:00,7.59,Tache bactérienne,1.0

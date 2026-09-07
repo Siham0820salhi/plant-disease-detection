@@ -2,7 +2,8 @@ import os
 import sys
 import dlt
 
-RAW_DATA_DIR = "data/raw"
+RAW_DATA_DIR = "data/raw/PlantVillage"
+
 
 
 def parse_plante_maladie(nom_dossier):

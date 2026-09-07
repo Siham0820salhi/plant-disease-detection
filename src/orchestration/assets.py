@@ -8,7 +8,7 @@ def asset_ingestion(context: AssetExecutionContext):
     """Ingestion des données brutes vers DuckDB avec dlt"""
     context.log.info("Démarrage de l'étape Ingestion...")
     result = subprocess.run(
-        [sys.executable, "pipeline_ingestion.py"],
+        [sys.executable, "src/ingestion/pipeline_ingestion.py"],
         capture_output=True,
         text=True
     )
@@ -26,7 +26,7 @@ def asset_preprocessing(context: AssetExecutionContext, asset_ingestion):
     """Prétraitement d'images et validation Data Quality"""
     context.log.info("Démarrage du Prétraitement et Data Quality...")
     result = subprocess.run(
-        [sys.executable, "preprocessing.py"],
+        [sys.executable, "src/preprocessing/preprocessing.py"],
         capture_output=True,
         text=True
     )
@@ -44,9 +44,14 @@ def asset_train_model(context: AssetExecutionContext, asset_preprocessing):
     """Entraînement du modèle CNN / Transfer Learning"""
     context.log.info("Démarrage de l'entraînement du modèle (P6)...")
     
-    # Appel dial le script train.py li f src/training/
+   # Appel du script train.py avec un modèle unique et peu d'époques,
+    # pour une démo Dagster rapide (pas une vraie comparaison de modèles).
     result = subprocess.run(
-        [sys.executable, "src/training/train.py"],
+        [
+            sys.executable, "src/training/train.py",
+            "--model", "resnet50",
+            "--epochs", "2",
+        ],
         capture_output=True,
         text=True
     )

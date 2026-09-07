@@ -7,11 +7,13 @@ aussi persistee dans logs/predictions.csv pour ne rien perdre en cas de
 redemarrage de l'API.
 """
 
-import csv # pour enregistrement 
+import csv  # pour enregistrement 
+import logging
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path 
+from pathlib import Path
+
 
 # Racine du projet, calculee depuis ce fichier (src/api/monitoring.py -> remonte de 2 niveaux)
 #PROJECT_ROOT = Path(__file__).resolve().parents[2] faut il ne trouve pas le fichier requirment  en remplacer par 
@@ -26,7 +28,6 @@ def _find_project_root() -> Path:
     return current  # repli de sécurité si jamais requirements.txt est introuvable
 
 PROJECT_ROOT = _find_project_root()
-########
 LOG_FILE = PROJECT_ROOT / "logs" / "predictions.csv"
 CSV_HEADERS = ["timestamp", "latency_ms", "disease", "confidence"]
 
@@ -47,10 +48,10 @@ def _append_to_csv(timestamp: str, latency_ms: float, disease: str, confidence: 
         with open(LOG_FILE, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow([timestamp, round(latency_ms, 2), disease, confidence])
-    except Exception:
-        # Le monitoring ne doit jamais faire planter une requete utilisateur.
-        pass
-######
+    except Exception as e:  # noqa: BLE001
+        # Le monitoring ne doit jamais faire planter une requete utilisateur,
+        # mais on trace l'erreur pour pouvoir la diagnostiquer plus tard.
+        logging.getLogger(__name__).warning("Echec de l'ecriture du log CSV : %s", e)
 
 @dataclass
 class RequestRecord:

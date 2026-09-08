@@ -48,7 +48,7 @@ def _append_to_csv(timestamp: str, latency_ms: float, disease: str, confidence: 
         with open(LOG_FILE, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow([timestamp, round(latency_ms, 2), disease, confidence])
-    except Exception as e: 
+    except Exception as e:  # noqa: BLE001
         # Le monitoring ne doit jamais faire planter une requete utilisateur,
         # mais on trace l'erreur pour pouvoir la diagnostiquer plus tard.
         logging.getLogger(__name__).warning("Echec de l'ecriture du log CSV : %s", e)

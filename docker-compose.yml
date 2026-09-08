@@ -28,7 +28,7 @@ services:
 
     ports:
       # <port_hote>:<port_conteneur>
-      - "8000:8000"
+      - "3701:8000"
 
     environment:
       # URI du serveur MLflow : on utilise le NOM du service Docker ("mlflow"),
@@ -72,7 +72,7 @@ services:
 
     ports:
       # Interface web MLflow accessible sur http://localhost:5000
-      - "5000:5000"
+      - "3702:5000"
 
     volumes:
       # Persistance des données MLflow entre les redémarrages :
@@ -117,7 +117,7 @@ services:
 
     ports:
       # Interface web Dagster (Dagit) accessible sur http://localhost:3000
-      - "3000:3000"
+      - "3703:3000"
 
     environment:
       - DAGSTER_HOME=/app/dagster_home

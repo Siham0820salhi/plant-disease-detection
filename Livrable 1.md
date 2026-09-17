@@ -3,6 +3,8 @@
 > **Projet : Plant Disease Detection**  
 > **Méthodologie : Scrum**  
 
+---
+
 ## 🎯 1. Présentation du projet
 
 Le projet **Plant Disease Detection** consiste à développer une solution de détection et de classification des maladies des plantes à partir d'images.
@@ -48,8 +50,8 @@ Le Product Backlog regroupe les User Stories nécessaires à la réalisation du 
 | US18 | Déployer l'application avec Docker | DevOps / Deployment | Sprint 3 | ✅ Terminée |
 | US19 | Réaliser l'analyse exploratoire des données | Analytics / EDA | Sprint 1 | ✅ Terminée |
 | US20 | Mettre en place le monitoring du modèle | Data Analysis / Monitoring | Sprint 4 | ✅ Terminée |
-| US21 | Monitoring | Data Analysis / Monitoring | Sprint 4 | ⏭️ Non planifiée |
-| US22 | Acceptance testing | Testing / QA | Sprint 4 | ⏭️ Non planifiée |
+| US21 | Monitoring | Data Analysis / Monitoring | Sprint 4 | ✅ Terminée |
+| US22 | Acceptance testing | Testing / QA | Sprint 4 | ✅ Terminée |
 | US23 | Orchestrer le pipeline avec Dagster | Orchestration | Sprint 2 | ✅ Terminée |
 
 > ℹ️ **Remarque :** US13 et US23 correspondent à deux Issues GitHub distinctes concernant l'orchestration avec Dagster. Elles sont conservées afin de refléter fidèlement le suivi GitHub du projet.
@@ -186,18 +188,14 @@ Le Product Backlog regroupe les User Stories nécessaires à la réalisation du 
 🔗 [GitHub Issue #21](https://github.com/Siham0820salhi/plant-disease-detection/issues/21)
 
 ### US21 — Monitoring
-**En tant qu'équipe projet**, nous voulons compléter le monitoring afin de surveiller les performances et la qualité du système.
+**En tant que Data Analyst**, nous voulons compléter le monitoring afin de surveiller les performances et la qualité du système.
 
 🔗 [GitHub Issue #24](https://github.com/Siham0820salhi/plant-disease-detection/issues/24)
 
-**Statut :** ⏭️ Non planifiée / skipped.
-
 ### US22 — Acceptance testing
-**En tant qu'équipe projet**, nous voulons réaliser les tests d'acceptation afin de vérifier la conformité globale du produit.
+**En tant que Product Owner & Équipe projet**, nous voulons réaliser les tests d'acceptation afin de vérifier la conformité globale du produit.
 
 🔗 [GitHub Issue #25](https://github.com/Siham0820salhi/plant-disease-detection/issues/25)
-
-**Statut :** ⏭️ Non planifiée / skipped.
 
 ---
 
@@ -279,15 +277,13 @@ Finaliser le déploiement et mettre en place les mécanismes de test et de monit
 
 ### 📌 Travaux prévus
 - Tester l'API.
-- Mettre en place le monitoring.
-- Préparer les contrôles de qualité.
+- Mettre en place le monitoring complet.
+- Réaliser l'Acceptance Testing.
 - Finaliser les éléments de déploiement et de CI/CD.
 
 🔗 [Milestone Sprint 4](https://github.com/Siham0820salhi/plant-disease-detection/milestone/4)
 
 **Avancement : 100 % ✅**
-
-> ℹ️ Certaines User Stories du Sprint 4 (US21 et US22) ont été marquées comme **Not planned / skipped** dans GitHub.
 
 ---
 
@@ -343,15 +339,12 @@ Le modèle est intégré dans une chaîne plus complète allant de l'expériment
 
 ### ✅ Réalisé
 - Tests de l'API.
-- Mise en place du monitoring prévu.
-- Vérification des éléments de déploiement.
-
-### ⏭️ Éléments non planifiés
-- US21 — Monitoring : skipped.
-- US22 — Acceptance testing : skipped.
+- Mise en place et complétion du monitoring complet du modèle.
+- Réalisation des tests d'acceptation (Acceptance testing).
+- Validation et vérification des éléments de déploiement.
 
 ### 📌 Résultat
-Le sprint a permis de finaliser les principaux éléments de déploiement et de contrôle du système.
+Le sprint a permis de finaliser l'ensemble des éléments de déploiement, de contrôle et de suivi de la solution.
 
 ---
 
@@ -369,11 +362,11 @@ Les rétrospectives ont permis à l'équipe d'identifier les points positifs, le
 
 ### ⚠️ What could be improved
 - Certaines tâches nécessitaient une meilleure estimation du temps.
-- La documentation pouvait être mise à jour plus régulièrement.
+- La documentation pouvait être mise à jour plus regularly.
 
 ### 💡 Actions d'amélioration
 - Améliorer l'estimation des tâches.
-- Documenter les décisions au fur et a mesure.
+- Documenter les décisions au fur et à mesure.
 - Maintenir une communication régulière entre les membres.
 
 ---
@@ -419,17 +412,16 @@ Les rétrospectives ont permis à l'équipe d'identifier les points positifs, le
 ## 🟣 Sprint 4 — Retrospective
 
 ### ✅ What went well
-- Les principaux éléments de déploiement ont été finalisés.
-- Les tests de l'API ont été réalisés.
-- Le suivi du projet via GitHub a facilité la visibilité sur l'avancement.
+- Tous les éléments de déploiement, monitoring et tests d'acceptation ont été finalisés.
+- Les tests de l'API ont été réalisés avec succès.
+- Le suivi du projet via GitHub a facilité la visibilité globale sur l'avancement.
 
 ### ⚠️ What could be improved
-- Certaines User Stories ont finalement été skipped.
-- Les tâches de fin de projet nécessitaient une meilleure anticipation.
+- La charge de travail de fin de projet nécessitait une forte coordination.
 
 ### 💡 Actions d'amélioration
-- Identifier plus tôt les fonctionnalités qui peuvent être reportées.
-- Prioriser les tâches essentielles à la livraison.
+- Anticiper plus tôt la préparation des environnements de déploiement.
+- Prioriser les tâches essentielles à la livraison finale.
 - Prévoir une phase finale dédiée à la validation et à la documentation.
 
 ---
@@ -440,8 +432,8 @@ Les rétrospectives ont permis à l'équipe d'identifier les points positifs, le
 |---|---:|
 | 🏃 Nombre de sprints | 4 |
 | 📋 User Stories suivies | 23 |
-| ✅ User Stories terminées | 21 |
-| ⏭️ User Stories skipped / non planifiées | 2 |
+| ✅ User Stories terminées | 23 |
+| ⏭️ User Stories skipped / non planifiées | 0 |
 | 📌 Milestones | 4 |
 | 🗂️ Suivi des tâches | GitHub Issues |
 | 📅 Organisation | Scrum |
@@ -451,13 +443,24 @@ Les rétrospectives ont permis à l'équipe d'identifier les points positifs, le
 
 # 👥 8. Organisation du travail
 
-L'équipe a utilisé une organisation collaborative basée sur :
+L'organisation repose sur la méthode Scrum, adaptée à une équipe de **8 membres**, chacun responsable d'un périmètre technique précis et complémentaire :
 
+| Membre | Rôle principal | Périmètre technique |
+|---|---|---|
+| **Hasnae El Mir** | Product Owner | Vision produit, backlog, validation finale |
+| **Hiba Ouafi** | Scrum Master | Facilitation, organisation Agile & processus |
+| **Khansaa Balakrafas** | Data Engineer | Ingestion des données PlantVillage |
+| **Salma Zamakhchari** | Data Engineer | Qualité et nettoyage des données |
+| **Ibtissam Essadiki** | Data Engineer / Orchestration | Pipeline & Orchestration avec Dagster |
+| **Chaimaa Afess** | ML Engineer | Entraînement, évaluation & MLflow |
+| **Oumaima Talbi** | DevOps Engineer | Déploiement, FastAPI & Docker |
+| **Siham Salhi** | Data Analyst | EDA & Monitoring du modèle |
+
+L'équipe a utilisé une organisation collaborative basée sur :
 - 📌 **GitHub Issues** pour les User Stories et les tâches.
-- 🏁 **GitHub Milestones** pour représenter les sprints.
+- 🏁 **GitHub Milestones** pour représenter les Sprints.
 - 📋 **GitHub Projects** pour visualiser l'avancement.
-- 🔀 **Git/GitHub** pour la collaboration et la gestion du code.
-- 🗣️ **Meetings réguliers** pour suivre l'avancement et coordonner les membres.
+- 🔀 **Git/GitHub** pour la gestion du code.
 - 🔄 **Scrum Events** : Sprint Planning, Sprint Review et Sprint Retrospective.
 
 ---
